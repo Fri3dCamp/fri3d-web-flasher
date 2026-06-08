@@ -13,14 +13,6 @@ function unzip(raw: Uint8Array): Promise<{ [key: string]: Uint8Array }> {
   });
 }
 
-function uint8ArrayToBinaryString(uint8Array: Uint8Array): string {
-  return Array.from(uint8Array, (byte) => String.fromCharCode(byte)).join("");
-}
-
-function arrayBufferToBinaryString(buffer: ArrayBuffer): string {
-  return uint8ArrayToBinaryString(new Uint8Array(buffer));
-}
-
 export async function parseUpload(file: File | ArrayBuffer, filenameOverride?: string): Promise<Firmware> {
   let buffer;
   let filename = "onbekend bestand";
@@ -48,7 +40,7 @@ export async function parseUpload(file: File | ArrayBuffer, filenameOverride?: s
         {
           address: 0,
           name: filename,
-          data: arrayBufferToBinaryString(buffer),
+          data: new Uint8Array(buffer),
           progress: 0,
         },
       ],
@@ -66,7 +58,7 @@ export async function parseUpload(file: File | ArrayBuffer, filenameOverride?: s
   const [flashArgs, ...partitionsStrings] = flashArgsFile.split("\n").filter(Boolean);
   const partitions = partitionsStrings.map((partition) => {
     const [address, name] = partition.split(" ");
-    const data = uint8ArrayToBinaryString(unzipped[name]);
+    const data = unzipped[name];
     return { address: parseInt(address, 16), name, data, progress: 0 };
   });
   return {
