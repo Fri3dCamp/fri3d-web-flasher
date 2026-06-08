@@ -41,9 +41,9 @@ export function EraseFlashButton() {
         Flash geheugen wissen
       </Button>
       <Dialog open={showDialog} onClose={closeDialog}>
-        <DialogBackdrop className="absolute inset-0 backdrop-blur-sm" />
+        <DialogBackdrop className="absolute inset-0 backdrop-blur-xs" />
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <DialogPanel className="max-w-lg space-y-4 rounded border bg-gray-50 p-12 dark:bg-slate-900 dark:text-white">
+          <DialogPanel className="max-w-lg space-y-4 rounded-sm border bg-gray-50 p-12 dark:bg-slate-900 dark:text-white">
             <DialogTitle className="font-bold">Badge wissen</DialogTitle>
 
             {isErasing && <Spinner />}

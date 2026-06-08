@@ -33,7 +33,7 @@ export function SimpleUpload() {
     <>
       <div
         className={clsx(
-          "relative h-48 w-96 rounded border border-dashed",
+          "relative h-48 w-96 rounded-sm border border-dashed",
           !fileIncoming && "border-gray-400 bg-gray-100 dark:bg-slate-600",
           fileIncoming && "border-emerald-600 bg-emerald-100 dark:bg-emerald-600",
           "mb-4",
