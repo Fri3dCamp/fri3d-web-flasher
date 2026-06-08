@@ -6,33 +6,32 @@
   "description": "Flash firmware of several Fri3d camp badges",
   "scripts": {
     "dev": "vite dev",
-    "build:": "vite build"
+    "build": "vite build"
   },
   "license": "MIT",
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.0",
-    "@tailwindcss/typography": "^0.5.14",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/crypto-js": "^4.2.2",
     "@types/dom-serial": "^1.0.6",
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react-swc": "^3.7.0",
-    "postcss": "^8.4.40",
-    "prettier": "^3.3.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4.3.0",
-    "vite": "^5.3.5"
+    "vite": "^8.0.16"
   },
   "dependencies": {
-    "@headlessui/react": "^2.1.2",
+    "@headlessui/react": "^2.2.10",
+    "@tailwindcss/vite": "^4.3.0",
     "clsx": "^2.1.1",
     "crypto-js": "^4.2.0",
-    "esptool-js": "^0.4.5",
-    "fflate": "^0.8.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-markdown": "^9.0.1",
-    "react-toastify": "^10.0.5"
+    "esptool-js": "^0.6.0",
+    "fflate": "^0.8.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-markdown": "^10.1.0",
+    "react-toastify": "^11.1.0"
   }
 }
