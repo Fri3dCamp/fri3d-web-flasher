@@ -188,7 +188,7 @@ export function EsptoolContextProvider({ children }: { children: React.ReactNode
         console.log("Progress", fileIndex, written, total);
         updateProgress(fileIndex, (written / total) * 100);
       },
-      calculateMD5Hash: (image) => CryptoJS.MD5(CryptoJS.enc.Latin1.parse(image)).toString(),
+      calculateMD5Hash: (image) => CryptoJS.MD5(CryptoJS.lib.WordArray.create(image)).toString(),
     };
     await esploader.current.writeFlash(flashOptions);
     // reset progress

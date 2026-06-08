@@ -4,7 +4,7 @@ export interface Firmware {
   partitions: {
     address: number;
     name: string;
-    data: string;
+    data: Uint8Array;
     progress: number;
   }[];
 }
