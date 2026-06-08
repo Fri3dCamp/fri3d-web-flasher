@@ -38,9 +38,9 @@ export function App() {
           <Switch
             checked={advancedMode}
             onChange={setAdvancedMode}
-            className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-emerald-600"
+            className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-checked:bg-emerald-600"
           >
-            <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
+            <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-checked:translate-x-6" />
           </Switch>
         </Field>
       </div>

@@ -69,7 +69,7 @@ export function AdvancedUpload() {
       <div className="my-2 flex gap-4">
         <div
           className={clsx(
-            "relative rounded border px-4 py-2",
+            "relative rounded-sm border px-4 py-2",
             "bg-white text-black hover:bg-gray-100",
             "disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-500",
             "dark:bg-slate-800 dark:text-white dark:hover:bg-slate-600",
