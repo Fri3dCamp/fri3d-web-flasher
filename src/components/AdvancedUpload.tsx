@@ -80,7 +80,7 @@ export function AdvancedUpload() {
           <Input type="file" className="absolute inset-0 block opacity-0" onChange={onFileSelect} disabled={isFlashing} />
         </div>
         <Button onClick={flash} disabled={!firmware || !isConnected || isFlashing}>
-          Upload firmware
+          Begin met flashen
         </Button>
       </div>
       <EraseFlashButton />
