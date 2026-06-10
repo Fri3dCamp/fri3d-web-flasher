@@ -15,7 +15,10 @@ export function NoSerialOverlay() {
 
   return (
     <div className="absolute z-10 flex h-screen w-screen items-center justify-center bg-white">
-      <div>Dit werkt enkel onder Google Chrome, Brave, Opera en andere webkit browsers.</div>
+      <div>
+        Je hebt een browser nodig die WebSerial ondersteunt, zoals Google Chrome, Brave, Opera of een heel recente
+        Firefox.
+      </div>
     </div>
   );
 }
