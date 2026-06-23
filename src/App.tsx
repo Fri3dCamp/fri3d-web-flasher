@@ -25,24 +25,31 @@ export function App() {
     <>
       <NoSerialOverlay />
       <ToastContainer />
-      <div className="h-screen w-screen">
-        <div className="absolute flex h-screen w-screen items-center justify-center">
-          <div className="flex flex-col items-center justify-normal">
-            <h1 className="mb-4 text-4xl">Fri3d Flasher</h1>
+      <div className="grid min-h-screen grid-rows-[auto_1fr] bg-white text-black">
+        <header className="flex items-center justify-between bg-black text-white">
+          <div className="font-display flex items-center gap-3 px-4 py-3 text-xl font-bold uppercase">
+            <img src="/fri3d-logo-white.svg" alt="Fri3d" className="h-8 w-auto" />
+            <span className="text-fri3d-mint">Flasher</span>
+          </div>
+
+          <Field className="flex items-center gap-3 px-4">
+            <Label className="font-display text-xs font-bold tracking-wide uppercase select-none">Geavanceerde modus</Label>
+            <Switch
+              checked={advancedMode}
+              onChange={setAdvancedMode}
+              className="group bg-fri3d-darkgrey data-checked:bg-fri3d-mint-dark inline-flex h-7 w-12 items-center rounded-full border-4 border-white transition"
+            >
+              <span className="size-3 translate-x-1 rounded-full bg-white transition group-data-checked:translate-x-6" />
+            </Switch>
+          </Field>
+        </header>
+
+        <main className="flex items-center justify-center p-6">
+          <div className="flex flex-col items-center">
             {advancedMode && <AdvancedUpload />}
             {!advancedMode && <SimpleUpload />}
           </div>
-        </div>
-        <Field className="absolute right-2 top-2 flex justify-center gap-4">
-          <Label className="select-none">Geavanceerde modus</Label>
-          <Switch
-            checked={advancedMode}
-            onChange={setAdvancedMode}
-            className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-checked:bg-emerald-600"
-          >
-            <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-checked:translate-x-6" />
-          </Switch>
-        </Field>
+        </main>
       </div>
     </>
   );

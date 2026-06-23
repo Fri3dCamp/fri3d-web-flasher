@@ -5,7 +5,7 @@ import { EsptoolContext } from "../context/EsptoolContext";
 import { toast } from "react-toastify";
 
 function Spinner() {
-  return <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900 dark:border-white" />;
+  return <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-4 border-fri3d-purple" />;
 }
 
 export function EraseFlashButton() {
@@ -41,10 +41,10 @@ export function EraseFlashButton() {
         Flash geheugen wissen
       </Button>
       <Dialog open={showDialog} onClose={closeDialog}>
-        <DialogBackdrop className="absolute inset-0 backdrop-blur-xs" />
+        <DialogBackdrop className="fixed inset-0 bg-black/40 backdrop-blur-xs" />
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <DialogPanel className="max-w-lg space-y-4 rounded-sm border bg-gray-50 p-12 dark:bg-slate-900 dark:text-white">
-            <DialogTitle className="font-bold">Badge wissen</DialogTitle>
+          <DialogPanel className="max-w-lg space-y-4 rounded-md border-4 border-black bg-white p-12 text-black shadow-hard">
+            <DialogTitle className="font-display text-xl font-bold uppercase">Badge wissen</DialogTitle>
 
             {isErasing && <Spinner />}
             {!isErasing && (
@@ -58,7 +58,7 @@ export function EraseFlashButton() {
             {!isErasing && (
               <div className="flex justify-between">
                 <Button onClick={() => setShowDialog(false)}>Annuleren</Button>
-                <Button onClick={startErase} type={ButtonType.Primary}>
+                <Button onClick={startErase} type={ButtonType.Danger}>
                   Flash geheugen wissen
                 </Button>
               </div>

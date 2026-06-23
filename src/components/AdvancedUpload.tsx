@@ -2,16 +2,16 @@ import { Input } from "@headlessui/react";
 import clsx from "clsx";
 import { useContext } from "react";
 import { EsptoolContext } from "../context/EsptoolContext";
-import { Button } from "./Button";
+import { Button, ButtonType } from "./Button";
 import { ConnectionButton } from "./ConnectionButton";
 import { EraseFlashButton } from "./EraseFlashButton";
 
 function TH({ children }: { children: React.ReactNode }) {
-  return <th className="border px-4 py-2">{children}</th>;
+  return <th className="border-2 border-black px-4 py-2 font-display uppercase">{children}</th>;
 }
 
 function TD({ children }: { children: React.ReactNode }) {
-  return <td className="border px-4 py-2">{children}</td>;
+  return <td className="border-2 border-black px-4 py-2">{children}</td>;
 }
 
 export function AdvancedUpload() {
@@ -43,9 +43,9 @@ export function AdvancedUpload() {
         </div>
         <div>Kristal: {deviceInfo.crystal}</div>
       </div>
-      <table className="mt-2 table-auto">
+      <table className="mt-2 table-auto border-collapse">
         <thead>
-          <tr className="dark:bg-slate-900">
+          <tr className="bg-fri3d-orange text-black">
             <TH>Adres</TH>
             <TH>Lengte</TH>
             <TH>Naam</TH>
@@ -69,22 +69,22 @@ export function AdvancedUpload() {
       <div className="my-2 flex gap-4">
         <div
           className={clsx(
-            "relative rounded-sm border px-4 py-2",
-            "bg-white text-black hover:bg-gray-100",
-            "disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-500",
-            "dark:bg-slate-800 dark:text-white dark:hover:bg-slate-600",
-            "dark:disabled:border-slate-800 dark:disabled:bg-slate-900 dark:disabled:text-slate-500",
+            "relative rounded-md border-4 border-black bg-white px-4 py-2 font-display text-sm font-bold uppercase text-black shadow-hard-sm",
           )}
         >
           Selecteer firmware
           <Input type="file" className="absolute inset-0 block opacity-0" onChange={onFileSelect} disabled={isFlashing} />
         </div>
-        <Button onClick={flash} disabled={!firmware || !isConnected || isFlashing}>
+        <Button type={ButtonType.Primary} onClick={flash} disabled={!firmware || !isConnected || isFlashing}>
           Begin met flashen
         </Button>
       </div>
       <EraseFlashButton />
-      {isFlashing && <div className="animate-pulse text-5xl text-red-500">Aan het flashen, niet uittrekken!</div>}
+      {isFlashing && (
+        <div className="mt-4 animate-pulse font-display text-4xl font-bold uppercase text-fri3d-red">
+          Aan het flashen, niet uittrekken!
+        </div>
+      )}
     </>
   );
 }

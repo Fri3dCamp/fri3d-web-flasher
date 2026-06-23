@@ -8,7 +8,7 @@ export function LanguageSwitcher() {
 
   return (
     <div className="sticky ml-2 mt-2">
-      <Button onClick={switchLanguage} className="px-4 py-2 text-lg text-white">
+      <Button onClick={switchLanguage}>
         <Translate item="changeToLanguage" />
       </Button>
     </div>

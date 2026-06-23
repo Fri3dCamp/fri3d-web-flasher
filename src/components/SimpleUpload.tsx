@@ -2,7 +2,7 @@ import { Input } from "@headlessui/react";
 import clsx from "clsx";
 import { useState, useContext } from "react";
 import { EsptoolContext } from "../context/EsptoolContext";
-import { Button } from "./Button";
+import { Button, ButtonType } from "./Button";
 
 export function SimpleUpload() {
   const [fileIncoming, setFileIncoming] = useState(false);
@@ -33,9 +33,9 @@ export function SimpleUpload() {
     <>
       <div
         className={clsx(
-          "relative h-48 w-96 rounded-sm border border-dashed",
-          !fileIncoming && "border-gray-400 bg-gray-100 dark:bg-slate-600",
-          fileIncoming && "border-emerald-600 bg-emerald-100 dark:bg-emerald-600",
+          "relative flex h-48 w-96 items-center justify-center rounded-md border-4 border-dashed shadow-hard-sm",
+          !fileIncoming && "border-black bg-white",
+          fileIncoming && "border-fri3d-mint-dark bg-fri3d-mint",
           "mb-4",
         )}
         onDrop={handleDrop}
@@ -45,17 +45,21 @@ export function SimpleUpload() {
         onDragEnter={() => setFileIncoming(true)}
         onDragLeave={() => setFileIncoming(false)}
       >
-        <p className="p-4 text-center">
+        <p className="p-4 text-center font-display font-semibold">
           {fileIncoming && !firmware && "Laat het vallen alsof het warm is."}
           {!fileIncoming && !firmware && "Klik hier om een firmware bestand op te laden of sleep hem in dit vakje."}
           {firmware && firmware.filename}
         </p>
         <Input type="file" className="absolute inset-0 block opacity-0" disabled={isFlashing} onChange={onFileSelect} />
       </div>
-      <Button onClick={flash} disabled={!firmware || isFlashing}>
+      <Button type={ButtonType.Primary} onClick={flash} disabled={!firmware || isFlashing}>
         Begin met flashen
       </Button>
-      {isFlashing && <div className="animate-pulse text-5xl text-red-500">Aan het flashen, niet uittrekken!</div>}
+      {isFlashing && (
+        <div className="mt-4 animate-pulse font-display text-4xl font-bold uppercase text-fri3d-red">
+          Aan het flashen, niet uittrekken!
+        </div>
+      )}
     </>
   );
 }
