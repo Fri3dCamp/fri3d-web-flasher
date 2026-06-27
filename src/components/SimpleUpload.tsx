@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { useState, useContext } from "react";
 import { EsptoolContext } from "../context/EsptoolContext";
 import { Button, ButtonType } from "./Button";
+import { ReleaseSelector } from "./ReleaseSelector";
 
 export function SimpleUpload() {
   const [fileIncoming, setFileIncoming] = useState(false);
@@ -31,6 +32,12 @@ export function SimpleUpload() {
 
   return (
     <>
+      <ReleaseSelector />
+      <div className="mb-4 flex w-96 items-center gap-3">
+        <div className="h-1 flex-1 bg-black" />
+        <span className="font-display text-xs font-bold uppercase tracking-wide">of laad een bestand op</span>
+        <div className="h-1 flex-1 bg-black" />
+      </div>
       <div
         className={clsx(
           "relative flex h-48 w-96 items-center justify-center rounded-md border-4 border-dashed shadow-hard-sm",
@@ -52,7 +59,7 @@ export function SimpleUpload() {
         </p>
         <Input type="file" className="absolute inset-0 block opacity-0" disabled={isFlashing} onChange={onFileSelect} />
       </div>
-      <Button type={ButtonType.Primary} onClick={flash} disabled={!firmware || isFlashing}>
+      <Button type={ButtonType.Primary} onClick={() => flash()} disabled={!firmware || isFlashing}>
         Begin met flashen
       </Button>
       {isFlashing && (
