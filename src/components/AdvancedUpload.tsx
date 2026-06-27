@@ -5,6 +5,7 @@ import { EsptoolContext } from "../context/EsptoolContext";
 import { Button, ButtonType } from "./Button";
 import { ConnectionButton } from "./ConnectionButton";
 import { EraseFlashButton } from "./EraseFlashButton";
+import { ReleaseSelector } from "./ReleaseSelector";
 
 function TH({ children }: { children: React.ReactNode }) {
   return <th className="border-2 border-black px-4 py-2 font-display uppercase">{children}</th>;
@@ -66,6 +67,12 @@ export function AdvancedUpload() {
             ))}
         </tbody>
       </table>
+      <ReleaseSelector advanced />
+      <div className="mb-2 flex w-full items-center gap-3">
+        <div className="h-1 flex-1 bg-black" />
+        <span className="font-display text-xs font-bold uppercase tracking-wide">of laad een bestand op</span>
+        <div className="h-1 flex-1 bg-black" />
+      </div>
       <div className="my-2 flex gap-4">
         <div
           className={clsx(
@@ -75,7 +82,7 @@ export function AdvancedUpload() {
           Selecteer firmware
           <Input type="file" className="absolute inset-0 block opacity-0" onChange={onFileSelect} disabled={isFlashing} />
         </div>
-        <Button type={ButtonType.Primary} onClick={flash} disabled={!firmware || !isConnected || isFlashing}>
+        <Button type={ButtonType.Primary} onClick={() => flash()} disabled={!firmware || !isConnected || isFlashing}>
           Begin met flashen
         </Button>
       </div>
