@@ -4,8 +4,9 @@ This is a program to easily repair your board that you bought or received at [Fr
 
 Currently Supported:
 
+- Badge 2026
 - Badge 2024
-- Badge 2022
+- Badge 2022 (manual flashing)
 
 Currently hosted at https://fri3d-flasher.vercel.app/
 
