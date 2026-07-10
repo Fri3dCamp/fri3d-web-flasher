@@ -1,10 +1,5 @@
+// A single full-image firmware binary, flashed at address 0x0.
 export interface Firmware {
   filename: string;
-  flashArgs: string;
-  partitions: {
-    address: number;
-    name: string;
-    data: Uint8Array;
-    progress: number;
-  }[];
+  data: Uint8Array;
 }

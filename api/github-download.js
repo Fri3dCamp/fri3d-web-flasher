@@ -1,9 +1,14 @@
 import { Buffer } from "node:buffer";
 
-// Only allow proxying firmware downloads from the official badge firmware repo.
+// Only allow proxying firmware downloads from supported Fri3d firmware repos.
 // This prevents the proxy from being abused as an open relay (SSRF protection).
 const ALLOWED_HOST = "github.com";
-const ALLOWED_PATH_PREFIX = "/Fri3dCamp/badge_firmware_MicroPythonOS/releases/download/";
+const ALLOWED_PATH_PREFIXES = [
+  "/Fri3dCamp/badge_firmware_MicroPythonOS/releases/download/",
+  "/Fri3dCamp/communicator_2026/releases/download/",
+  "/Fri3dCamp/communicator_2024/releases/download/",
+  "/Fri3dCamp/dj_2026/releases/download/",
+];
 
 /**
  * Serverless proxy that downloads a GitHub release asset server-side and returns
@@ -34,7 +39,11 @@ export default async function handler(req, res) {
       return;
     }
 
-    if (parsed.protocol !== "https:" || parsed.hostname !== ALLOWED_HOST || !parsed.pathname.startsWith(ALLOWED_PATH_PREFIX)) {
+    if (
+      parsed.protocol !== "https:" ||
+      parsed.hostname !== ALLOWED_HOST ||
+      !ALLOWED_PATH_PREFIXES.some((prefix) => parsed.pathname.startsWith(prefix))
+    ) {
       res.statusCode = 403;
       res.end("URL not allowed");
       return;

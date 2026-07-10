@@ -1,38 +1,182 @@
-import { useState, createContext } from "react";
-import { Language } from "../enum/Language";
+import { createContext, useContext, useEffect, useState } from "react";
+
+export type Language = "nl" | "en";
+
+// All UI strings, keyed per language. Keep the two dictionaries in sync;
+// the `Dict` type enforces that `en` has exactly the keys of `nl`.
+const nl = {
+  // App shell
+  "app.advancedMode": "Geavanceerde modus",
+  "app.noSerial": "Je hebt een browser nodig die WebSerial of WebUSB ondersteunt, zoals Google Chrome, Brave of Opera.",
+
+  // Generic
+  "common.close": "Sluiten",
+  "common.cancel": "Annuleren",
+  "common.version": "Versie",
+  "common.refreshReleases": "Refresh releases",
+  "common.refreshing": "Vernieuwen...",
+  "common.loadingReleases": "Releases worden geladen...",
+  "common.flashing": "Aan het flashen...",
+  "common.downloadingFirmware": "Firmware downloaden...",
+  "common.help": "Hulp",
+
+  // Connection
+  "connect.connect": "Verbinden",
+  "connect.connecting": "Aan het verbinden...",
+  "connect.disconnect": "Verbinding verbreken",
+  "connect.error": "Er is een fout opgetreden bij het verbinden met de badge",
+
+  // Esptool / flashing
+  "flash.success": "Firmware geflashed!",
+  "flash.doNotUnplug": "Aan het flashen, niet uittrekken!",
+  "flash.unknown": "onbekend",
+
+  // Badge flasher
+  "badge.title": "Badge (USB serieel)",
+  "badge.fetchError": "Kon de releases niet ophalen van GitHub.",
+  "badge.badge": "Badge",
+  "badge.downloadAndFlash": "Download en flash",
+  "badge.flashLatest": "Flash nieuwste firmware (badge {badge})",
+  "badge.downloadOrFlashError": "Kon de firmware niet downloaden of flashen",
+  "badge.helpTitle": "Badge {badge} flashen",
+  "badge.chip": "Chip",
+  "badge.mac": "MAC adres",
+  "badge.features": "Features",
+  "badge.crystal": "Kristal",
+
+  // Peripheral flasher
+  "peripheral.title": "Peripherals (WebUSB)",
+  "peripheral.device": "Toestel",
+  "peripheral.fetchError": "Kon de releases niet ophalen. Probeer later opnieuw.",
+  "peripheral.selectUsb": "WebUSB toestel selecteren...",
+  "peripheral.connecting": "Verbinden met toestel...",
+  "peripheral.flashFailed": "Flashen mislukt",
+  "peripheral.closeFailed": "Kon de WebUSB sessie niet sluiten",
+  "peripheral.flashViaUsb": "Flash via WebUSB",
+  "peripheral.flashLatest": "Flash nieuwste {label}",
+  "peripheral.noRelease": "Geen release beschikbaar voor {label}",
+  "peripheral.success": "{label} succesvol geflashed ({tag})",
+  "peripheral.helpTitle": "{label} flashen",
+  "peripheral.helpTitleAdvanced": "Peripheral flashen (Lana bordje)",
+
+  // Erase
+  "erase.button": "Flash geheugen wissen",
+  "erase.title": "Badge wissen",
+  "erase.warningPrefix": "Dit zal",
+  "erase.warningBold": "alle gegevens",
+  "erase.warningSuffix": "op de badge wissen.",
+  "erase.confirm": "Weet je zeker dat je de badge wilt wissen? Dit kan niet ongedaan worden gemaakt.",
+  "erase.error": "Er is een fout opgetreden bij het wissen van het flash geheugen",
+  "erase.success": "Flash geheugen gewist",
+};
+
+const en: Dict = {
+  "app.advancedMode": "Advanced mode",
+  "app.noSerial": "You need a browser that supports WebSerial or WebUSB, such as Google Chrome, Brave or Opera.",
+
+  "common.close": "Close",
+  "common.cancel": "Cancel",
+  "common.version": "Version",
+  "common.refreshReleases": "Refresh releases",
+  "common.refreshing": "Refreshing...",
+  "common.loadingReleases": "Loading releases...",
+  "common.flashing": "Flashing...",
+  "common.downloadingFirmware": "Downloading firmware...",
+  "common.help": "Help",
+
+  "connect.connect": "Connect",
+  "connect.connecting": "Connecting...",
+  "connect.disconnect": "Disconnect",
+  "connect.error": "An error occurred while connecting to the badge",
+
+  "flash.success": "Firmware flashed!",
+  "flash.doNotUnplug": "Flashing, do not unplug!",
+  "flash.unknown": "unknown",
+
+  "badge.title": "Badge (USB serial)",
+  "badge.fetchError": "Could not fetch the releases from GitHub.",
+  "badge.badge": "Badge",
+  "badge.downloadAndFlash": "Download and flash",
+  "badge.flashLatest": "Flash latest firmware (badge {badge})",
+  "badge.downloadOrFlashError": "Could not download or flash the firmware",
+  "badge.helpTitle": "Flashing badge {badge}",
+  "badge.chip": "Chip",
+  "badge.mac": "MAC address",
+  "badge.features": "Features",
+  "badge.crystal": "Crystal",
+
+  "peripheral.title": "Peripherals (WebUSB)",
+  "peripheral.device": "Device",
+  "peripheral.fetchError": "Could not fetch the releases. Try again later.",
+  "peripheral.selectUsb": "Select the WebUSB device...",
+  "peripheral.connecting": "Connecting to device...",
+  "peripheral.flashFailed": "Flashing failed",
+  "peripheral.closeFailed": "Could not close the WebUSB session",
+  "peripheral.flashViaUsb": "Flash via WebUSB",
+  "peripheral.flashLatest": "Flash latest {label}",
+  "peripheral.noRelease": "No release available for {label}",
+  "peripheral.success": "{label} flashed successfully ({tag})",
+  "peripheral.helpTitle": "Flashing {label}",
+  "peripheral.helpTitleAdvanced": "Flashing a peripheral (Lana board)",
+
+  "erase.button": "Erase flash memory",
+  "erase.title": "Erase badge",
+  "erase.warningPrefix": "This will erase",
+  "erase.warningBold": "all data",
+  "erase.warningSuffix": "on the badge.",
+  "erase.confirm": "Are you sure you want to erase the badge? This cannot be undone.",
+  "erase.error": "An error occurred while erasing the flash memory",
+  "erase.success": "Flash memory erased",
+};
+
+type Dict = typeof nl;
+export type TranslationKey = keyof Dict;
+
+const dictionaries: Record<Language, Dict> = { nl, en };
+
+const STORAGE_KEY = "language";
+
+function detectLanguage(): Language {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored === "nl" || stored === "en") {
+    return stored;
+  }
+  return navigator.language?.toLowerCase().startsWith("nl") ? "nl" : "en";
+}
 
 interface LanguageContextType {
-  currentLanguage: Language;
+  language: Language;
   setLanguage: (language: Language) => void;
-  switchLanguage: () => void;
+  t: (key: TranslationKey, params?: Record<string, string>) => string;
 }
 
 export const LanguageContext = createContext<LanguageContextType>({
-  currentLanguage: Language.NL,
+  language: "nl",
   setLanguage: () => {},
-  switchLanguage: () => {},
+  t: (key) => key,
 });
 
 export function LanguageContextProvider({ children }: { children: React.ReactNode }) {
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(Language.NL);
+  const [language, setLanguage] = useState<Language>(detectLanguage);
 
-  function setLanguage(language: Language) {
-    setCurrentLanguage(language);
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, language);
+    document.documentElement.lang = language;
+  }, [language]);
+
+  function t(key: TranslationKey, params?: Record<string, string>): string {
+    let text: string = dictionaries[language][key] ?? key;
+    if (params) {
+      for (const [name, value] of Object.entries(params)) {
+        text = text.replaceAll(`{${name}}`, value);
+      }
+    }
+    return text;
   }
 
-  function switchLanguage() {
-    setCurrentLanguage((currentLanguage) => (currentLanguage === Language.NL ? Language.EN : Language.NL));
-  }
+  return <LanguageContext.Provider value={{ language, setLanguage, t }}>{children}</LanguageContext.Provider>;
+}
 
-  return (
-    <LanguageContext.Provider
-      value={{
-        currentLanguage,
-        setLanguage,
-        switchLanguage,
-      }}
-    >
-      {children}
-    </LanguageContext.Provider>
-  );
+export function useTranslation() {
+  return useContext(LanguageContext);
 }

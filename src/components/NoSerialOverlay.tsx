@@ -1,23 +1,24 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "../context/LanguageContext";
 
 export function NoSerialOverlay() {
-  const [hasSerialSupport, setHasSerialSupport] = useState(true);
+  const [hasSupportedTransport, setHasSupportedTransport] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
-    if (!navigator.serial) {
-      setHasSerialSupport(false);
-    }
+    const serialSupported = typeof navigator.serial !== "undefined";
+    const usbSupported = typeof navigator.usb !== "undefined";
+    setHasSupportedTransport(serialSupported || usbSupported);
   }, []);
 
-  if (hasSerialSupport) {
+  if (hasSupportedTransport) {
     return null;
   }
 
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center bg-white p-6">
-      <div className="max-w-md border-4 border-black bg-fri3d-red p-8 font-display font-semibold text-white shadow-hard">
-        Je hebt een browser nodig die WebSerial ondersteunt, zoals Google Chrome, Brave, Opera of een heel recente
-        Firefox.
+      <div className="bg-fri3d-red font-display shadow-hard max-w-md border-4 border-black p-8 font-semibold text-white">
+        {t("app.noSerial")}
       </div>
     </div>
   );
