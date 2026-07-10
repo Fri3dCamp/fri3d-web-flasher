@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
 import { Field, Label, Switch } from "@headlessui/react";
-import { SimpleUpload } from "./components/SimpleUpload";
 import { ToastContainer } from "./components/ToastContainer";
-import { AdvancedUpload } from "./components/AdvancedUpload";
 import { NoSerialOverlay } from "./components/NoSerialOverlay";
+import { BadgeFlasher } from "./components/BadgeFlasher";
+import { PeripheralFlasher } from "./components/PeripheralFlasher";
+import { useTranslation } from "./context/LanguageContext";
 
 export function App() {
   const [advancedMode, setAdvancedMode] = useState(false);
+  const { language, setLanguage, t } = useTranslation();
 
   useEffect(() => {
-    // get advancedMdoe from local storage
-    const advancedMode = localStorage.getItem("advancedMode");
-    if (advancedMode) {
-      setAdvancedMode(advancedMode === "true");
+    const stored = localStorage.getItem("advancedMode");
+    if (stored) {
+      setAdvancedMode(stored === "true");
     }
   }, []);
 
   useEffect(() => {
-    // save advancedMode to local storage
     localStorage.setItem("advancedMode", advancedMode.toString());
   }, [advancedMode]);
 
@@ -32,22 +32,31 @@ export function App() {
             <span className="text-fri3d-mint">Flasher</span>
           </div>
 
-          <Field className="flex items-center gap-3 px-4">
-            <Label className="font-display text-xs font-bold tracking-wide uppercase select-none">Geavanceerde modus</Label>
-            <Switch
-              checked={advancedMode}
-              onChange={setAdvancedMode}
-              className="group bg-fri3d-darkgrey data-checked:bg-fri3d-mint-dark inline-flex h-7 w-12 items-center rounded-full border-4 border-white transition"
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={() => setLanguage(language === "nl" ? "en" : "nl")}
+              className="font-display px-3 py-1 text-xs font-bold tracking-wide text-white uppercase underline-offset-4 hover:underline"
             >
-              <span className="size-3 translate-x-1 rounded-full bg-white transition group-data-checked:translate-x-6" />
-            </Switch>
-          </Field>
+              {language === "nl" ? "English" : "Nederlands"}
+            </button>
+            <Field className="flex items-center gap-3 px-4">
+              <Label className="font-display text-xs font-bold tracking-wide uppercase select-none">{t("app.advancedMode")}</Label>
+              <Switch
+                checked={advancedMode}
+                onChange={setAdvancedMode}
+                className="group bg-fri3d-darkgrey data-checked:bg-fri3d-mint-dark inline-flex h-7 w-12 items-center rounded-full border-4 border-white transition"
+              >
+                <span className="size-3 translate-x-1 rounded-full bg-white transition group-data-checked:translate-x-6" />
+              </Switch>
+            </Field>
+          </div>
         </header>
 
-        <main className="flex items-center justify-center p-6">
-          <div className="flex flex-col items-center">
-            {advancedMode && <AdvancedUpload />}
-            {!advancedMode && <SimpleUpload />}
+        <main className="flex items-start justify-center p-6">
+          <div className="flex w-full max-w-4xl flex-col items-center">
+            <BadgeFlasher advanced={advancedMode} />
+            <PeripheralFlasher advanced={advancedMode} />
           </div>
         </main>
       </div>

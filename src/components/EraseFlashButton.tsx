@@ -2,10 +2,11 @@ import { Dialog, DialogPanel, DialogTitle, Description, DialogBackdrop } from "@
 import { Button, ButtonType } from "./Button";
 import { useContext, useState } from "react";
 import { EsptoolContext } from "../context/EsptoolContext";
+import { useTranslation } from "../context/LanguageContext";
 import { toast } from "react-toastify";
 
 function Spinner() {
-  return <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-4 border-fri3d-purple" />;
+  return <div className="border-fri3d-purple mx-auto h-8 w-8 animate-spin rounded-full border-b-4" />;
 }
 
 export function EraseFlashButton() {
@@ -13,6 +14,7 @@ export function EraseFlashButton() {
   const [isErasing, setIsErasing] = useState(false);
 
   const { isConnected, eraseFlash, isFlashing } = useContext(EsptoolContext);
+  const { t } = useTranslation();
 
   async function startErase() {
     setIsErasing(true);
@@ -20,11 +22,11 @@ export function EraseFlashButton() {
       await eraseFlash();
     } catch (error) {
       console.error("Failed to erase flash memory", error);
-      toast.error("Er is een fout opgetreden bij het wissen van het flash geheugen");
+      toast.error(t("erase.error"));
     } finally {
       setIsErasing(false);
       setShowDialog(false);
-      toast.success("Flash geheugen gewist");
+      toast.success(t("erase.success"));
     }
   }
 
@@ -38,28 +40,28 @@ export function EraseFlashButton() {
   return (
     <>
       <Button onClick={() => setShowDialog(true)} disabled={!isConnected || isFlashing}>
-        Flash geheugen wissen
+        {t("erase.button")}
       </Button>
       <Dialog open={showDialog} onClose={closeDialog}>
         <DialogBackdrop className="fixed inset-0 bg-black/40 backdrop-blur-xs" />
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <DialogPanel className="max-w-lg space-y-4 rounded-md border-4 border-black bg-white p-12 text-black shadow-hard">
-            <DialogTitle className="font-display text-xl font-bold uppercase">Badge wissen</DialogTitle>
+          <DialogPanel className="shadow-hard max-w-lg space-y-4 rounded-md border-4 border-black bg-white p-12 text-black">
+            <DialogTitle className="font-display text-xl font-bold uppercase">{t("erase.title")}</DialogTitle>
 
             {isErasing && <Spinner />}
             {!isErasing && (
               <>
                 <Description>
-                  Dit zal <strong>alle gegevens</strong> op de badge wissen.
+                  {t("erase.warningPrefix")} <strong>{t("erase.warningBold")}</strong> {t("erase.warningSuffix")}
                 </Description>
-                <p>Weet je zeker dat je de badge wilt wissen? Dit kan niet ongedaan worden gemaakt.</p>
+                <p>{t("erase.confirm")}</p>
               </>
             )}
             {!isErasing && (
               <div className="flex justify-between">
-                <Button onClick={() => setShowDialog(false)}>Annuleren</Button>
+                <Button onClick={() => setShowDialog(false)}>{t("common.cancel")}</Button>
                 <Button onClick={startErase} type={ButtonType.Danger}>
-                  Flash geheugen wissen
+                  {t("erase.button")}
                 </Button>
               </div>
             )}

@@ -1,6 +1,11 @@
 import { Buffer } from "node:buffer";
 
-const RELEASES_URL = "https://api.github.com/repos/Fri3dCamp/badge_firmware_MicroPythonOS/releases";
+const ALLOWED_REPOS = {
+  badge: "Fri3dCamp/badge_firmware_MicroPythonOS",
+  communicator2026: "Fri3dCamp/communicator_2026",
+  communicator2024: "Fri3dCamp/communicator_2024",
+  dj2026: "Fri3dCamp/dj_2026",
+};
 
 /**
  * Serverless proxy that returns the GitHub releases listing for the badge
@@ -13,7 +18,17 @@ const RELEASES_URL = "https://api.github.com/repos/Fri3dCamp/badge_firmware_Micr
  */
 export default async function handler(_req, res) {
   try {
-    const upstream = await fetch(RELEASES_URL, {
+    const requestUrl = new URL(_req.url ?? "", "http://localhost");
+    const repoKey = requestUrl.searchParams.get("repo") ?? "badge";
+    const selectedRepo = ALLOWED_REPOS[repoKey];
+
+    if (!selectedRepo) {
+      res.statusCode = 400;
+      res.end("Unsupported repo");
+      return;
+    }
+
+    const upstream = await fetch(`https://api.github.com/repos/${selectedRepo}/releases`, {
       headers: {
         Accept: "application/vnd.github+json",
         "User-Agent": "fri3d-web-flasher",

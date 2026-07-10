@@ -29,10 +29,9 @@
     "clsx": "^2.1.1",
     "crypto-js": "^4.2.0",
     "esptool-js": "^0.6.0",
-    "fflate": "^0.8.3",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-markdown": "^10.1.0",
-    "react-toastify": "^11.1.0"
+    "react-toastify": "^11.1.0",
+    "wchisp-web": "^0.2.0"
   }
 }

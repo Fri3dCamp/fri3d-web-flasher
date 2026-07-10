@@ -14,7 +14,7 @@ export function Button({
   return (
     <HUButton
       className={clsx(
-        "rounded-md border-4 border-black px-4 py-2 font-display text-sm font-bold uppercase shadow-hard-sm",
+        "font-display shadow-hard-sm rounded-md border-4 border-black px-4 py-2 text-sm font-bold uppercase",
         "transition-transform enabled:active:translate-x-1 enabled:active:translate-y-1 enabled:active:shadow-none",
         "disabled:border-gray-300 disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none",
         type === ButtonType.Regular && "bg-white text-black",
