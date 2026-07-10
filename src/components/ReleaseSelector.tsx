@@ -1,9 +1,27 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { EsptoolContext } from "../context/EsptoolContext";
 import { Button, ButtonType } from "./Button";
 
-const RELEASES_URL = "/api/releases";
+const DEFAULT_PROXY_ORIGIN = "https://fri3d-flasher.vercel.app";
+
+function getApiBaseUrl(): string {
+  const configured = document.querySelector('meta[name="fri3d-api-base-url"]')?.getAttribute("content")?.trim();
+  if (configured) {
+    return configured.replace(/\/$/, "");
+  }
+
+  // GitHub Pages only serves static assets and has no serverless `/api` routes.
+  // Fall back to the Vercel-hosted proxy for release listing and downloads.
+  if (window.location.hostname.endsWith("github.io")) {
+    return DEFAULT_PROXY_ORIGIN;
+  }
+
+  return "";
+}
+
+const API_BASE_URL = getApiBaseUrl();
+const RELEASES_URL = `${API_BASE_URL}/api/releases`;
 // Only releases that ship the `fri3d_flasher_<fw>_firmware_for_<badge>_badge.zip`
 // assets are supported (introduced in 0.10.2). Older legacy zips are ignored.
 const ASSET_REGEX = /^fri3d_flasher_\d+_firmware_for_(\d+)_badge\.zip$/;
@@ -44,75 +62,65 @@ const selectClassName = clsx(
 );
 
 export function ReleaseSelector({ advanced = false }: { advanced?: boolean }) {
-  const { loadFirmwareFromUrl, flash, isFlashing } = useContext(EsptoolContext);
+  const { loadFirmwareFromUrl, clearFirmwareCache, flash, isFlashing } = useContext(EsptoolContext);
 
   const [releases, setReleases] = useState<FlashableRelease[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const [selectedTag, setSelectedTag] = useState<string>("");
   const [selectedBadge, setSelectedBadge] = useState<string>(DEFAULT_BADGE);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchReleases() {
+  const fetchReleases = useCallback(async (forceRefresh = false): Promise<boolean> => {
+    try {
       setLoading(true);
       setError(false);
-      try {
-        const response = await fetch(RELEASES_URL);
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        const data: GithubRelease[] = await response.json();
-        const flashable: FlashableRelease[] = data
-          .map((release) => {
-            const badges = release.assets
-              .map((asset) => {
-                const badge = badgeFromAssetName(asset.name);
-                if (!badge) {
-                  return null;
-                }
-                return { badge, asset } satisfies BadgeOption;
-              })
-              .filter((badge): badge is BadgeOption => badge !== null)
-              .sort((a, b) => b.badge.localeCompare(a.badge));
-            return {
-              tag: release.tag_name,
-              name: release.name || release.tag_name,
-              prerelease: release.prerelease,
-              badges,
-            };
-          })
-          .filter((release) => release.badges.length > 0);
-
-        if (cancelled) {
-          return;
-        }
-
-        setReleases(flashable);
-        if (flashable.length > 0) {
-          setSelectedTag(flashable[0].tag);
-        }
-      } catch (e) {
-        console.error(e);
-        if (!cancelled) {
-          setError(true);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+      const requestUrl = forceRefresh ? `${RELEASES_URL}?t=${Date.now()}` : RELEASES_URL;
+      const response = await fetch(requestUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
+      const data: GithubRelease[] = await response.json();
+      const flashable: FlashableRelease[] = data
+        .map((release) => {
+          const badges = release.assets
+            .map((asset) => {
+              const badge = badgeFromAssetName(asset.name);
+              if (!badge) {
+                return null;
+              }
+              return { badge, asset } satisfies BadgeOption;
+            })
+            .filter((badge): badge is BadgeOption => badge !== null)
+            .sort((a, b) => b.badge.localeCompare(a.badge));
+          return {
+            tag: release.tag_name,
+            name: release.name || release.tag_name,
+            prerelease: release.prerelease,
+            badges,
+          };
+        })
+        .filter((release) => release.badges.length > 0);
+
+      setReleases(flashable);
+      if (flashable.length > 0) {
+        setSelectedTag(flashable[0].tag);
+      }
+      return true;
+    } catch (e) {
+      console.error(e);
+      setError(true);
+      return false;
+    } finally {
+      setLoading(false);
     }
-
-    fetchReleases();
-
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  useEffect(() => {
+    fetchReleases();
+  }, [fetchReleases]);
 
   const selectedRelease = useMemo(
     () => releases.find((release) => release.tag === selectedTag),
@@ -144,13 +152,23 @@ export function ReleaseSelector({ advanced = false }: { advanced?: boolean }) {
     try {
       // GitHub release downloads redirect to githubusercontent.com without CORS
       // headers, so they are fetched through a same-origin serverside proxy.
-      const proxyUrl = `/api/github-download?url=${encodeURIComponent(selectedAsset.browser_download_url)}`;
+      const proxyUrl = `${API_BASE_URL}/api/github-download?url=${encodeURIComponent(selectedAsset.browser_download_url)}`;
       const firmware = await loadFirmwareFromUrl(proxyUrl, selectedAsset.name);
       if (firmware) {
         await flash(firmware);
       }
     } finally {
       setDownloading(false);
+    }
+  }
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    try {
+      await clearFirmwareCache();
+      await fetchReleases(true);
+    } finally {
+      setRefreshing(false);
     }
   }
 
@@ -167,6 +185,7 @@ export function ReleaseSelector({ advanced = false }: { advanced?: boolean }) {
   }
 
   const busy = downloading || isFlashing;
+  const refreshBusy = busy || loading || refreshing;
 
   return (
     <div
@@ -209,6 +228,10 @@ export function ReleaseSelector({ advanced = false }: { advanced?: boolean }) {
               ))}
             </select>
           </label>
+
+          <Button type={ButtonType.Regular} onClick={handleRefresh} disabled={refreshBusy}>
+            {refreshing ? "Vernieuwen..." : "Refresh releases"}
+          </Button>
         </>
       )}
 

@@ -48,6 +48,7 @@ interface EsptoolContextType {
   firmware: Firmware | null;
   uploadFirmware: (file: File) => Promise<void>;
   loadFirmwareFromUrl: (url: string, filename?: string) => Promise<Firmware | null>;
+  clearFirmwareCache: () => Promise<void>;
   flash: (firmwareToFlash?: Firmware) => Promise<void>;
   logs: string[];
   connect: () => Promise<void>;
@@ -69,6 +70,7 @@ export const EsptoolContext = createContext<EsptoolContextType>({
   firmware: null,
   uploadFirmware: async () => {},
   loadFirmwareFromUrl: async () => null,
+  clearFirmwareCache: async () => {},
   flash: async () => {},
   logs: [],
   connect: async () => {},
@@ -88,7 +90,7 @@ export const EsptoolContext = createContext<EsptoolContextType>({
 
 export function EsptoolContextProvider({ children }: { children: React.ReactNode }) {
   const [logs, setLogs] = useState<string[]>([]);
-  const [baudrate, setBaudrate] = useState(115200);
+  const baudrate = 115200;
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isFlashing, setIsFlashing] = useState(false);
@@ -286,6 +288,18 @@ export function EsptoolContextProvider({ children }: { children: React.ReactNode
     }
   }
 
+  async function clearFirmwareCache() {
+    parsedFirmwareCache.clear();
+    if (typeof caches === "undefined") {
+      return;
+    }
+    try {
+      await caches.delete(FIRMWARE_CACHE_NAME);
+    } catch (error) {
+      console.warn("Could not clear firmware cache", error);
+    }
+  }
+
   async function eraseFlash() {
     if (!esploader.current) {
       return;
@@ -316,6 +330,7 @@ export function EsptoolContextProvider({ children }: { children: React.ReactNode
       value={{
         uploadFirmware,
         loadFirmwareFromUrl,
+        clearFirmwareCache,
         firmware,
         flash,
         logs,

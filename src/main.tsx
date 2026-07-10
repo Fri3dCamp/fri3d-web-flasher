@@ -4,6 +4,9 @@ import "./main.css";
 import "react-toastify/dist/ReactToastify.css";
 import { LanguageContextProvider } from "./context/LanguageContext.tsx";
 import { EsptoolContextProvider } from "./context/EsptoolContext.tsx";
+import { registerSW } from "virtual:pwa-register";
+
+registerSW({ immediate: true });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <LanguageContextProvider>
