@@ -18,7 +18,7 @@ Supported hardware:
 - Communicator 2026 / 2024
 - DJ Addon 2026
 
-Hosted at https://fri3d-flasher.vercel.app/
+Hosted at https://fri3dcamp.github.io/fri3d-web-flasher/
 
 ## Architecture
 
