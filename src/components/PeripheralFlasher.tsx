@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { toast } from "react-toastify";
-import { WchIspFlasher, WebSerialTransport, WebUsbTransport, type Progress } from "wchisp-web";
+import { WchIspFlasher, WebUsbTransport, type Progress } from "wchisp-web";
 import { Button, ButtonType } from "./Button";
 import { downloadAsset, fetchReleases, GithubAsset } from "../lib/github";
 import { HelpButton, PeripheralInstructions } from "./HelpDialog";
@@ -46,10 +46,6 @@ function normalizeError(error: unknown, fallback: string): string {
     return error;
   }
   return fallback;
-}
-
-function shouldUseSerialFirst(peripheralKey: Peripheral["key"]): boolean {
-  return peripheralKey === "communicator2024";
 }
 
 export function PeripheralFlasher({ advanced = false }: { advanced?: boolean }) {
@@ -144,9 +140,7 @@ export function PeripheralFlasher({ advanced = false }: { advanced?: boolean }) 
       const bytes = new Uint8Array(await downloadAsset(release.asset));
 
       setStatusMessage(t("peripheral.selectUsb"));
-      const transport = shouldUseSerialFirst(peripheral.key)
-        ? await WebSerialTransport.request({ baudRate: 115200 })
-        : await WebUsbTransport.request();
+      const transport = await WebUsbTransport.request();
       isp = new WchIspFlasher(transport);
 
       setStatusMessage(t("peripheral.connecting"));
