@@ -28,7 +28,7 @@ export function App() {
       <div className="grid min-h-screen grid-rows-[auto_1fr] bg-white text-black">
         <header className="flex items-center justify-between bg-black text-white">
           <div className="font-display flex items-center gap-3 px-4 py-3 text-xl font-bold uppercase">
-            <img src="/fri3d-logo-white.svg" alt="Fri3d" className="h-8 w-auto" />
+            <img src={`${import.meta.env.BASE_URL}fri3d-logo-white.svg`} alt="Fri3d" className="h-8 w-auto" />
             <span className="text-fri3d-mint">Flasher</span>
           </div>
 

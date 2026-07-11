@@ -25,6 +25,8 @@ function apiProxy(): Plugin {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // Default base is "/" (local dev, Vercel). GitHub Pages deploy overrides via
+  // `npm run build -- --base /fri3d-web-flasher/` in .github/workflows/deploy-pages.yml.
   plugins: [
     react(),
     tailwindcss(),
@@ -45,6 +47,7 @@ export default defineConfig({
         skipWaiting: true,
         cleanupOutdatedCaches: true,
         navigateFallback: "index.html",
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
             urlPattern: /\/api\/releases(\?.*)?$/,

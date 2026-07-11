@@ -65,7 +65,7 @@ export function BadgeInstructions({ badge }: { badge: string }) {
               You are ready to flash! Press the <strong>flash</strong> button and pick the badge's serial port.
             </li>
           </Steps>
-          <img src="/badge_2024.webp" alt="Badge 2024 with the switches marked" className={imgClassName} />
+          <img src={`${import.meta.env.BASE_URL}badge_2024.webp`} alt="Badge 2024 with the switches marked" className={imgClassName} />
         </>
       );
     }
@@ -81,7 +81,7 @@ export function BadgeInstructions({ badge }: { badge: string }) {
             Je bent klaar om te flashen! Druk op de <strong>flash</strong> knop en kies de seriële poort van de badge.
           </li>
         </Steps>
-        <img src="/badge_2024.webp" alt="Badge 2024 met de schakelaars gemarkeerd" className={imgClassName} />
+        <img src={`${import.meta.env.BASE_URL}badge_2024.webp`} alt="Badge 2024 met de schakelaars gemarkeerd" className={imgClassName} />
       </>
     );
   }
@@ -104,8 +104,8 @@ export function BadgeInstructions({ badge }: { badge: string }) {
           <strong>Already plugged in and it won't connect?</strong> Hold down the <strong>S</strong> button (the boot button) and then press{" "}
           <strong>reset</strong>. That boots the badge into flash mode without replugging the cable.
         </p>
-        <img src="/badge_2026_S.webp" alt="Badge 2026: location of the S (boot) button" className={imgClassName} />
-        <img src="/badge_2026_reset.webp" alt="Badge 2026: location of the reset pin" className={imgClassName} />
+        <img src={`${import.meta.env.BASE_URL}badge_2026_S.webp`} alt="Badge 2026: location of the S (boot) button" className={imgClassName} />
+        <img src={`${import.meta.env.BASE_URL}badge_2026_reset.webp`} alt="Badge 2026: location of the reset pin" className={imgClassName} />
       </>
     );
   }
@@ -125,8 +125,8 @@ export function BadgeInstructions({ badge }: { badge: string }) {
         <strong>Al aangesloten en verbindt het niet?</strong> Hou de <strong>S</strong> knop (de boot knop) ingedrukt en druk dan op{" "}
         <strong>reset</strong>. Zo start de badge op in flash modus zonder de kabel opnieuw in te steken.
       </p>
-      <img src="/badge_2026_S.webp" alt="Badge 2026: locatie van de S (boot) knop" className={imgClassName} />
-      <img src="/badge_2026_reset.webp" alt="Badge 2026: locatie van de reset pin" className={imgClassName} />
+      <img src={`${import.meta.env.BASE_URL}badge_2026_S.webp`} alt="Badge 2026: locatie van de S (boot) knop" className={imgClassName} />
+      <img src={`${import.meta.env.BASE_URL}badge_2026_reset.webp`} alt="Badge 2026: locatie van de reset pin" className={imgClassName} />
     </>
   );
 }
@@ -151,7 +151,7 @@ export function PeripheralInstructions() {
             You are ready to flash! Press the <strong>flash</strong> button and pick the USB device.
           </li>
         </Steps>
-        <img src="/lana.webp" alt="Lana board with the boot button marked" className={imgClassName} />
+        <img src={`${import.meta.env.BASE_URL}lana.webp`} alt="Lana board with the boot button marked" className={imgClassName} />
       </>
     );
   }
@@ -167,7 +167,7 @@ export function PeripheralInstructions() {
           Je bent klaar om te flashen! Druk op de <strong>flash</strong> knop en kies het USB toestel.
         </li>
       </Steps>
-      <img src="/lana.webp" alt="Lana bordje met de boot knop gemarkeerd" className={imgClassName} />
+      <img src={`${import.meta.env.BASE_URL}lana.webp`} alt="Lana bordje met de boot knop gemarkeerd" className={imgClassName} />
     </>
   );
 }
