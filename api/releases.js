@@ -1,11 +1,13 @@
 import { Buffer } from "node:buffer";
 
-const ALLOWED_REPOS = {
-  badge: "Fri3dCamp/badge_firmware_MicroPythonOS",
-  communicator2026: "Fri3dCamp/communicator_2026",
-  communicator2024: "Fri3dCamp/communicator_2024",
-  dj2026: "Fri3dCamp/dj_2026",
-};
+// Repos allowed through the local dev proxy. Production goes through the
+// Vercel-hosted proxy, which enforces its own ALLOWED_REPOS env var.
+const ALLOWED_REPOS = new Set([
+  "Fri3dCamp/badge_firmware_MicroPythonOS",
+  "Fri3dCamp/communicator_2026",
+  "Fri3dCamp/communicator_2024",
+  "Fri3dCamp/dj_2026",
+]);
 
 /**
  * Serverless proxy that returns the GitHub releases listing for the badge
@@ -19,12 +21,11 @@ const ALLOWED_REPOS = {
 export default async function handler(_req, res) {
   try {
     const requestUrl = new URL(_req.url ?? "", "http://localhost");
-    const repoKey = requestUrl.searchParams.get("repo") ?? "badge";
-    const selectedRepo = ALLOWED_REPOS[repoKey];
+    const selectedRepo = requestUrl.searchParams.get("repo");
 
-    if (!selectedRepo) {
-      res.statusCode = 400;
-      res.end("Unsupported repo");
+    if (!selectedRepo || !ALLOWED_REPOS.has(selectedRepo)) {
+      res.statusCode = 403;
+      res.end("Repo not allowed");
       return;
     }
 

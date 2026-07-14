@@ -13,13 +13,13 @@ function getApiBaseUrl(): string {
     return configured.replace(/\/$/, "");
   }
 
-  // GitHub Pages only serves static assets and has no serverless `/api` routes.
-  // Fall back to the Vercel-hosted proxy for release listing and downloads.
-  if (window.location.hostname.endsWith("github.io")) {
-    return DEFAULT_PROXY_ORIGIN;
+  // Local dev has the API middleware in the Vite server; everywhere else
+  // (GitHub Pages, static hosting) use the Vercel-hosted proxy.
+  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+    return "";
   }
 
-  return "";
+  return DEFAULT_PROXY_ORIGIN;
 }
 
 export const API_BASE_URL = getApiBaseUrl();
@@ -36,10 +36,23 @@ export interface GithubRelease {
   assets: GithubAsset[];
 }
 
+// Map firmware keys used in the UI to their GitHub repos. The proxy's
+// ALLOWED_REPOS allow-list validates the full "owner/repo" value.
+const REPO_BY_KEY: Record<string, string> = {
+  badge: "Fri3dCamp/badge_firmware_MicroPythonOS",
+  communicator2026: "Fri3dCamp/communicator_2026",
+  communicator2024: "Fri3dCamp/communicator_2024",
+  dj2026: "Fri3dCamp/dj_2026",
+};
+
 /** Fetch the releases of one of the allowed Fri3d repos (see api/releases.js). */
-export async function fetchReleases(repo: string, forceRefresh = false): Promise<GithubRelease[]> {
+export async function fetchReleases(repoKey: string, forceRefresh = false): Promise<GithubRelease[]> {
+  const repo = REPO_BY_KEY[repoKey];
+  if (!repo) {
+    throw new Error(`Unknown firmware repo key: ${repoKey}`);
+  }
   const cacheBuster = forceRefresh ? `&t=${Date.now()}` : "";
-  const response = await fetch(`${API_BASE_URL}/api/releases?repo=${repo}${cacheBuster}`);
+  const response = await fetch(`${API_BASE_URL}/api/releases?repo=${encodeURIComponent(repo)}${cacheBuster}`);
   if (!response.ok) {
     throw new Error(`Release request failed (HTTP ${response.status})`);
   }
